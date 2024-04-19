@@ -9,7 +9,7 @@
 echo "axe DevTools Linter Jenkins SonarQube Starting $(date)"
 
 # Path to axe-linter-connector executable
-AXE_CONNECTOR_PATH="C:/ProgramData/Jenkins/.jenkins/workspace/angular-core-test/axe-linter-connector-win"
+AXE_CONNECTOR_PATH="bin/axe-linter-connector-win"
 
 # Configure outfile: output in Generic Issue Import Format for SonarQube in execution directory.
 OutFile="axe-linter-report.json"
