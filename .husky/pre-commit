@@ -4,6 +4,6 @@ RESULT=$?
 ./pre-commit-accessibility.sh
 OUTPUT=$?
 if [ $RESULT -ne 0 ] || [ $OUTPUT -ne 0 ]; then
-  exit 1  # Fail pre-commit hook if any script fails
+  exit 1  # Fail pre-commit hook if any sc1ipt fails
 fi
 exit 0
