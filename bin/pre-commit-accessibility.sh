@@ -25,34 +25,36 @@ VerboseOutput="false"
 # Configure outfile: output in Generic Issue Import Format for in execution directory.
 OutFile="axe-linter-report.json"
 for i in $(git status --porcelain | sed s/^...//); do
-   rm -f $OutFile
-   TempCode=0
-   shopt -s nocasematch;
-   if [[ $i == *.html ]] || [[ $i == *.js ]] || [[ $i == *.jsx ]]|| [[ $i == *.ts ]]|| [[ $i == *.tsx ]]|| [[ $i == *.vue ]]|| [[ $i == *.htm ]]|| [[ $i == *.md ]]|| [[ $i == *.markdown ]];
-   then
-      if $VerboseOutput; then
-         echo "Accessibility check: file: $i"
-      fi
-      # execute axe DevTools Linter Connector
-      "$AXE_CONNECTOR_PATH" -s $i -d . --api-key $AXE_LINTER_API_KEY --url $AXE_LINTER_SERVER_URL
-
-      if [ ! -f "$OutFile" ];then
-         echo "$OutFile Does Not Exist"
-         sleep 4
-         exit 2
-      elif cat "$OutFile" | grep -q "BUG"; then
+   if git diff --cached --name-only | grep -q "$i"; then
+      rm -f $OutFile
+      TempCode=0
+      shopt -s nocasematch;
+      if [[ $i == *.html ]] || [[ $i == *.js ]] || [[ $i == *.jsx ]]|| [[ $i == *.ts ]]|| [[ $i == *.tsx ]]|| [[ $i == *.vue ]]|| [[ $i == *.htm ]]|| [[ $i == *.md ]]|| [[ $i == *.markdown ]];
+      then
          if $VerboseOutput; then
-            cat $OutFile
+            echo "Accessibility check: file: $i"
          fi
-         echo "**axe DevTools Linter Accessibility Issues Detected: $i"
-         TempCode=1
-      else
-         echo "No axe DevTools Linter Connector Issues Detected in: $i"
+         # execute axe DevTools Linter Connector
+         "$AXE_CONNECTOR_PATH" -s $i -d . --api-key $AXE_LINTER_API_KEY --url $AXE_LINTER_SERVER_URL
+
+         if [ ! -f "$OutFile" ];then
+            echo "$OutFile Does Not Exist"
+            sleep 4
+            exit 2
+         elif cat "$OutFile" | grep -q "BUG"; then
+            if $VerboseOutput; then
+               cat $OutFile
+            fi
+            echo "**axe DevTools Linter Accessibility Issues Detected: $i"
+            TempCode=1
+         else
+            echo "No axe DevTools Linter Connector Issues Detected in: $i"
+         fi
+         if [ "$TempCode" != "0" ]; then
+            StatusCode=1
+         fi
+         rm $OutFile
       fi
-      if [ "$TempCode" != "0" ]; then
-         StatusCode=1
-      fi
-      rm $OutFile
    fi
 done
  
